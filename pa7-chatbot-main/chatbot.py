@@ -9,6 +9,7 @@ import util
 from pydantic import BaseModel, Field
 
 import numpy as np
+import re
 
 
 # noinspection PyMethodMayBeStatic
@@ -33,7 +34,7 @@ class Chatbot:
         ########################################################################
 
         # Binarize the movie ratings before storing the binarized matrix.
-        self.ratings = ratings
+        self.ratings = self.binarize(ratings, threshold=2.5)
         ########################################################################
         #                             END OF YOUR CODE                         #
         ########################################################################
@@ -163,7 +164,11 @@ class Chatbot:
         pre-processed with preprocess()
         :returns: list of movie titles that are potentially in the text
         """
-        return []
+        pattern = r'"([^"]+)"'
+        titles = re.findall(pattern, preprocessed_input)
+        return titles
+
+        
 
     def find_movies_by_title(self, title):
         """ Given a movie title, return a list of indices of matching movies.
@@ -201,7 +206,19 @@ class Chatbot:
         pre-processed with preprocess()
         :returns: a numerical value for the sentiment of the text
         """
-        return 0
+        sentiment_sum = 0
+
+        words = preprocessed_input.split()
+        for word in words:
+            sentiment_sum += self.lexicon.get(word, 0)
+        
+        if sentiment_sum > 0:
+            return 1
+        elif sentiment_sum < 0:
+            return -1
+        else:
+            return 0
+
 
     ############################################################################
     # 3. Movie Recommendation helper functions                                 #
@@ -231,11 +248,9 @@ class Chatbot:
         #                                                                      #
         # WARNING: Do not use self.ratings directly in this function.          #
         ########################################################################
-
         # The starter code returns a new matrix shaped like ratings but full of
         # zeros.
-        binarized_ratings = np.zeros_like(ratings)
-
+        binarized_ratings = np.where(ratings == 0, 0, np.where(ratings > threshold, 1, -1))
         ########################################################################
         #                        END OF YOUR CODE                              #
         ########################################################################
@@ -254,7 +269,14 @@ class Chatbot:
         ########################################################################
         # TODO: Compute cosine similarity between the two vectors.             #
         ########################################################################
-        similarity = 0
+        dot_product = np.dot(u, v)
+        norm_u = np.lingalg.norm(u)
+        norm_v = np.lingalg.norm(v)
+
+        if norm_u == 0 or norm_v == 0:
+            return 0
+        
+        similarity = dot_product / (norm_u * norm_v)
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
