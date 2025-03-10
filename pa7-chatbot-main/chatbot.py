@@ -18,7 +18,7 @@ class Chatbot:
     def __init__(self, llm_enabled=False):
         # The chatbot's default name is `moviebot`.
         # TODO: Give your chatbot a new name.
-        self.name = 'moviebot'
+        self.name = 'OurBot'
 
         self.llm_enabled = llm_enabled
 
