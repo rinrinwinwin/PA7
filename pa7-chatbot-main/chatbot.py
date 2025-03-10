@@ -32,7 +32,6 @@ class Chatbot:
         ########################################################################
         # TODO: Binarize the movie ratings matrix.                             #
         ########################################################################
-
         # Binarize the movie ratings before storing the binarized matrix.
         self.ratings = self.binarize(ratings, threshold=2.5)
         ########################################################################
@@ -167,7 +166,6 @@ class Chatbot:
         pattern = r'"([^"]+)"'
         titles = re.findall(pattern, preprocessed_input)
         return titles
-
         
 
     def find_movies_by_title(self, title):
