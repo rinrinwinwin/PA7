@@ -208,8 +208,12 @@ class Chatbot:
 
         words = preprocessed_input.split()
         for word in words:
-            sentiment_sum += self.lexicon.get(word, 0)
-        
+            sentiment_value = self.sentiment.get(word)
+            if sentiment_value == "pos":
+                sentiment_sum += 1
+            elif sentiment_value == "neg":
+                sentiment_sum -= 1
+
         if sentiment_sum > 0:
             return 1
         elif sentiment_sum < 0:
