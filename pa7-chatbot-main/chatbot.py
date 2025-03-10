@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 import numpy as np
 import re
-
+import nltk
 
 # noinspection PyMethodMayBeStatic
 class Chatbot:
@@ -204,15 +204,70 @@ class Chatbot:
         pre-processed with preprocess()
         :returns: a numerical value for the sentiment of the text
         """
-        sentiment_sum = 0
+        text = re.sub(r'"[^"]+"', '', preprocessed_input)
+        words = text.split()
 
-        words = preprocessed_input.split()
-        for word in words:
-            sentiment_value = self.sentiment.get(word)
-            if sentiment_value == "pos":
-                sentiment_sum += 1
-            elif sentiment_value == "neg":
-                sentiment_sum -= 1
+        negation_words = {"not", "never", "no", "didnt", "didn't", "doesnt", "doesn't", "isnt", "isn't", 
+                        "wasnt", "wasn't", "cannot", "can't", "couldn't", "shouldn't", "won't",
+                        "wouldnt", "wouldn't", "arent", "aren't", "werent", "weren't", "hasnt", "hasn't",
+                        "havent", "haven't", "hadnt", "hadn't", "dont", "don't", "wont", "won't",
+                        "neither", "nor", "nobody", "nothing", "nowhere", "none", "hardly",
+                        "scarcely", "barely", "rarely", "seldom", "least", "without", "lack", "lacks",
+                        "lacking", "failed", "fails", "failing", "absent", "devoid", "free of",
+                        "minus", "contrary to", "opposite of", "unlike", "instead of", "rather than",
+                        "far from", "nowhere near", "anything but", "by no means", "in no way",
+                        "aint", "ain't", "couldnt", "mustn't", "mustnt", "needn't", "neednt",
+                        "oughtn't", "oughtnt", "mightn't", "mightnt", "refuses", "refused", "denies", "denied"}
+
+        emphasis_words = {"very", "really", "extremely", "so", "incredibly", 
+                        "particularly", "especially", "remarkably", "strikingly",
+                        "exceptionally", "immensely", "intensely", "profoundly",
+                        "thoroughly", "decidedly", "supremely", "genuinely",
+                        "truly", "absolutely", "unbelievably", "astonishingly",
+                        "surprisingly", "notably", "uncommonly", "tremendously",
+                        "fantastically", "insanely", "ridiculously", "shockingly",
+                        "mind-blowingly", "jaw-droppingly", "stunningly"}
+
+        absolute_words = {
+                        "always", "never", "completely", "totally", "utterly", 
+                        "entirely", "wholly", "perfectly", "flawlessly",
+                        "invariably", "universally", "permanently", "categorically",
+                        "unquestionably", "undeniably", "undoubtedly", "indisputably",
+                        "unequivocally", "definitively", "unconditionally", "consistently",
+                        "unfailingly", "perpetually", "eternally", "thoroughly",
+                        "without exception", "in every way", "beyond measure",
+                        "beyond doubt", "beyond question", "beyond compare"}
+        
+        sentiment_sum = 0
+        window_size = 3  
+        
+        for i, word in enumerate(words):
+            base_sentiment = self.sentiment.get(word)
+            if base_sentiment is None:
+                continue  
+            
+            sentiment = 1 if base_sentiment == "pos" else -1
+            
+            negation_flag = False
+            emphasis_count = 0
+            absolute_count = 0
+            
+            for j in range(max(0, i - window_size), i):
+                modifier = words[j]
+                if modifier in negation_words:
+                    negation_flag = True
+                if modifier in emphasis_words:
+                    emphasis_count += 1
+                if modifier in absolute_words:
+                    absolute_count += 1
+            
+            if negation_flag:
+                sentiment = -sentiment
+            
+            multiplier = 1 + emphasis_count + 2 * absolute_count
+            
+            sentiment *= multiplier
+            sentiment_sum += sentiment
 
         if sentiment_sum > 0:
             return 1
