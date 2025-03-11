@@ -404,6 +404,20 @@ class Chatbot:
 
         recommendations = []
 
+        if not llm_enabled:
+            rated_movies = np.nonzero(user_ratings)[0]  # get all movies user has rated as list of indices
+            cos_sum = np.zeros((ratings_matrix.shape[0],))
+            norms = np.linalg.norm(ratings_matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1e-9
+            normalized_ratings = ratings_matrix / norms
+            for index in rated_movies:  # for every movie the user has rated
+                target_row = normalized_ratings[index]  # get all user ratings for target movie
+                similarity_matrix = normalized_ratings.dot(target_row)  # get cosine similarity between target movie and all unwatched movies
+                contribution = user_ratings[index] * similarity_matrix  # multiply similarity matrix by rating
+                cos_sum += contribution  # summation
+            cos_sum[rated_movies] = -np.inf #eliminates movies user has seen from contention
+            recommendations = np.argsort(cos_sum)[-k:][::-1].tolist()
+
         ########################################################################
         #                        END OF YOUR CODE                              #
         ########################################################################
