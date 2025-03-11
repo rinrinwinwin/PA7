@@ -5,6 +5,8 @@
 # Update: 2024-01: Added the ability to run the chatbot as LLM interface (@mryan0)
 # Update: 2025-01 for Winter 2025 (Xuheng Cai)
 ######################################################################
+import os.path
+
 import util
 from pydantic import BaseModel, Field
 
@@ -166,7 +168,7 @@ class Chatbot:
         pattern = r'"([^"]+)"'
         titles = re.findall(pattern, preprocessed_input)
         return titles
-        
+
 
     def find_movies_by_title(self, title):
         """ Given a movie title, return a list of indices of matching movies.
@@ -186,7 +188,30 @@ class Chatbot:
         :param title: a string containing a movie title
         :returns: a list of indices of matching movies
         """
-        return []
+
+        matching_movies = []
+
+        #preprocessing to separate query into year and lowercase title
+        movie_with_year = r"^(?:\b(A|An|The)\b\s*)?(.+?)(?:\s*\((\d{4})\))?$"
+        processed_year = None
+        p_title = re.match(movie_with_year, title)
+        processed_title = p_title.group(2).lower()
+        if p_title.group(3):
+            processed_year = int(p_title.group(3))
+
+        with open('data/movies.txt', "r", encoding="utf-8") as file:
+            pattern = r"(\d+)%(.+?) \((\d{4})\)%(.+)"
+            for line in file:
+                match = re.match(pattern, line)
+                if match:
+                    index = int(match.group(1))
+                    movie_title = match.group(2).strip().lower()
+                    year = int(match.group(3))
+                    if processed_title in movie_title:
+                        if processed_year == year or processed_year is None:
+                            matching_movies.append(index)
+
+        return matching_movies
 
     def extract_sentiment(self, preprocessed_input):
         """Extract a sentiment rating from a line of pre-processed text.
@@ -376,6 +401,7 @@ class Chatbot:
         ########################################################################
 
         # Populate this list with k movie indices to recommend to the user.
+
         recommendations = []
 
         ########################################################################
