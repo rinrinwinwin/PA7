@@ -226,26 +226,28 @@ class Chatbot:
             year = year_match.group(0) if year_match else None
             if year:
                 text = text.replace(year, "")
-            
+                
             for p in ["?", ",", ".", "-", "_", "—", "&", "!"]:
                 text = text.replace(p, "")
             
-            features = [word.strip() for word in text.split() if word.strip() not in {"i", "an", "a", "the"}]
+            stopwords = {"i", "an", "a", "the"}
+            features = [word.strip() for word in text.split() if word.strip() not in stopwords]
             return features, year
 
-        def is_match(query, movie):
-            query_features, query_year = query
-            movie_features, movie_year = movie
-            return (query_features == movie_features) and (query_year is None or movie_year is None or query_year == movie_year)
+        def is_match(query_features, movie_features):
+            query_words, query_year = query_features
+            movie_words, movie_year = movie_features
+            return (query_words == movie_words) and (query_year is None or movie_year is None or query_year == movie_year)
+        
+        def find_matches(t):
+            query_features = process_features(t)
+            return [
+                idx for idx, movie in enumerate(self.titles)
+                if is_match(query_features, process_features(movie[0]))
+            ]
+            
+        return find_matches(use_title)
 
-        query_features = process_features(title)
-        
-        matching_indices = [
-            idx for idx, movie in enumerate(self.titles)
-            if is_match(query_features, process_features(movie[0]))
-        ]
-        
-        return matching_indices
 
     def extract_sentiment(self, preprocessed_input):
         """Extract a sentiment rating from a line of pre-processed text.
