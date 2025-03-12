@@ -1,7 +1,5 @@
 /Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py:26: SyntaxWarning: invalid escape sequence '\ '
   HEADER = """Welcome to Stanford CS124's
-[93mWARNING: Unable to load Together API client (TOGETHER_API_KEY in api_keys.py not found)[0m
-[93mLLM Calls will not work.  Please add a TOGETHER_API_KEY to api_keys.py before starting parts 2 and 3.[0m
 Welcome to Stanford CS124's
  _______  _______       ___________
 |       ||   _   |      \          \
@@ -26,38 +24,21 @@ Welcome to Stanford CS124's
         and expressions of sentiment will be simple!
         TODO: Write here the description for your own chatbot!
         
-[96mOurBot> [0mHow can I help you?
+[96mOurBot> [0mWhat is crack-a-lackin. I am the best chatbot. How may I assist you today?
 > I liked "Titanic"
 
-[96mOurBot> [0mTraceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 214, in onecmd
-    func = getattr(self, 'do_' + cmd)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'REPL' object has no attribute 'do_I'
+[96mOurBot> [0m I am a movie bot. I only discuss movies. Please stay on topic and only discuss movies with me. You provided a movie, "Titanic", but did not give your opinion on it. Please provide an opinion that is either positive or negative.
+> I didn't like "Ex Machina"
 
-During handling of the above exception, another exception occurred:
+[96mOurBot> [0m You disliked "Ex Machina". I have now collected your opinions on 1 movie. I need 4 more movies that you have a positive or negative sentiment on to start giving recommendations. What is another movie that you either liked or disliked?
+> Who are you?
 
-Traceback (most recent call last):
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 211, in <module>
-    repl.cmdloop()
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 82, in cmdloop
-    return super().cmdloop(intro)
-           ^^^^^^^^^^^^^^^^^^^^^^
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 138, in cmdloop
-    stop = self.onecmd(line)
-           ^^^^^^^^^^^^^^^^^
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 96, in onecmd
-    return super().onecmd(s)
-           ^^^^^^^^^^^^^^^^^
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 216, in onecmd
-    return self.default(line)
-           ^^^^^^^^^^^^^^^^^^
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 110, in default
-    self.process_llm(line)
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 159, in process_llm
-    response = stream_llm_to_console(
-               ^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/util.py", line 91, in stream_llm_to_console
-    stream = client.chat.completions.create(
-             ^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'chat'
+[96mOurBot> [0m  I am a movie bot. I only discuss movies. Please stay on topic and only discuss movies with me. Your question is off-topic. 
+
+To answer your question, I am a movie bot that is here to help you by obtaining information on what movies you either liked or disliked and then using that information to give you movie recommendations. 
+
+What is another movie that you either liked or disliked? 
+
+As a reminder, I have collected your opinions on 1 movie. I need 4 more movies that you have a positive or negative sentiment on to start giving recommendations.
+> :quit
+[96mOurBot> [0mSee you soon!

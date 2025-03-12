@@ -1,7 +1,5 @@
 /Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py:26: SyntaxWarning: invalid escape sequence '\ '
   HEADER = """Welcome to Stanford CS124's
-[93mWARNING: Unable to load Together API client (TOGETHER_API_KEY in api_keys.py not found)[0m
-[93mLLM Calls will not work.  Please add a TOGETHER_API_KEY to api_keys.py before starting parts 2 and 3.[0m
 Welcome to Stanford CS124's
  _______  _______       ___________
 |       ||   _   |      \          \
@@ -26,16 +24,16 @@ Welcome to Stanford CS124's
         and expressions of sentiment will be simple!
         TODO: Write here the description for your own chatbot!
         
-[96mOurBot> [0mHow can I help you?
+[96mOurBot> [0mWhat is up my fellow. I am a chatbot. What can I do for you today?
 > I am sad.
 
-[96mOurBot> [0mI processed I am sad. in LLM Programming mode!!
+[96mOurBot> [0mI could not espy any title of a drama in thy discourse, good sir/madam. Let us keep our converse to the naming of dramas and our sentiments thereof, I beseech thee! And, pray, enshroud movie names in the quotation marks, as is meet and proper.
 > I am happy.
 
-[96mOurBot> [0mI processed I am happy. in LLM Programming mode!!
+[96mOurBot> [0mI found it not meet, in sooth, to discern no title of a moving picture in thy missive. Let us keep our discourse to the subject of film titles and views, I pray thee! And mayhap, enclose the names of such films in quotation marks, if thou wilt.}
 > I am angry.
 
-[96mOurBot> [0mI processed I am angry. in LLM Programming mode!!
+[96mOurBot> [0mPrithee, speak unto me of a film most pleasing to thine eye, and encase the title thereof in quotation marks, that I may comprehend it.
 > :quit
 
 [96mOurBot> [0mHave a nice day!

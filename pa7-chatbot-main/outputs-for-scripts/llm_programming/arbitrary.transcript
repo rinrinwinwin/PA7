@@ -1,7 +1,5 @@
 /Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py:26: SyntaxWarning: invalid escape sequence '\ '
   HEADER = """Welcome to Stanford CS124's
-[93mWARNING: Unable to load Together API client (TOGETHER_API_KEY in api_keys.py not found)[0m
-[93mLLM Calls will not work.  Please add a TOGETHER_API_KEY to api_keys.py before starting parts 2 and 3.[0m
 Welcome to Stanford CS124's
  _______  _______       ___________
 |       ||   _   |      \          \
@@ -26,22 +24,72 @@ Welcome to Stanford CS124's
         and expressions of sentiment will be simple!
         TODO: Write here the description for your own chatbot!
         
-[96mOurBot> [0mHow can I help you?
+[96mOurBot> [0mWhat is crack-a-lackin. I am the best chatbot. How may I assist you today?
 > Hi!
 
-[96mOurBot> [0mI processed Hi! in LLM Programming mode!!
+[96mOurBot> [0mI am but a mere film suggestion bot, I prithee, share with me a title of a movie and my sentiments towards it, enclosed within the quotation marks. Anon, I shall strive to express myself in a manner akin to the Bard.
 > sup?
 
-[96mOurBot> [0mI processed sup? in LLM Programming mode!!
+[96mOurBot> [0mI find I cannot discern any film's title in thy missive. Let us keep to discussion of movie titles and sentiments, I pray thee! Lest we forget, encase movie names in quotation marks.}
 > can you help me finish my pset?
 
-[96mOurBot> [0mI processed can you help me finish my pset? in LLM Programming mode!!
+[96mOurBot> [0mI found no thespian spectacle in that discourse, dear interlocutor. Pray, direct thine attention to the revelation of a motion picture, be it one of joy or disdain, that hath left an imprint upon thine heart. And, in good faith, mayhap encapsulate said movie betwixt quotation marks, that I may discern it with utmost clarity.
 > I'm tired
 
-[96mOurBot> [0mI processed I'm tired in LLM Programming mode!!
-> what's your favorite color?
-
-[96mOurBot> [0mI processed what's your favorite color? in LLM Programming mode!!
-> :quit
-
-[96mOurBot> [0mHave a nice day!
+Traceback (most recent call last):
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 211, in <module>
+    repl.cmdloop()
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 82, in cmdloop
+    return super().cmdloop(intro)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 138, in cmdloop
+    stop = self.onecmd(line)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 96, in onecmd
+    return super().onecmd(s)
+           ^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 216, in onecmd
+    return self.default(line)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 112, in default
+    response = self.chatbot.process(line)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/chatbot.py", line 339, in process
+    response = self.text_persona_translation(response)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/chatbot.py", line 287, in text_persona_translation
+    res = self.call_llm(NeuralTextTransfer, prompt, input_text)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/chatbot.py", line 431, in call_llm
+    return util.json_llm_call(llm_prompt, llm_input, class_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/util.py", line 146, in json_llm_call
+    chat_completion = client.chat.completions.create(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_utils/_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 879, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1242, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 919, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1008, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1008, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1023, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'id': 'nkgagef-4yUbBN-91f1603a98ca67a3', 'error': {'message': 'Request was rejected due to request rate limiting. Your rate limits are 60 RPM (1 QPS) and 60000 TPM (1000 TPS). See details: https://docs.together.ai/docs/rate-limits', 'type': 'rate_limit', 'param': None, 'code': None}}

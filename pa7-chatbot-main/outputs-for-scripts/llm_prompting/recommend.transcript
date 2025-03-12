@@ -1,7 +1,5 @@
 /Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py:26: SyntaxWarning: invalid escape sequence '\ '
   HEADER = """Welcome to Stanford CS124's
-[93mWARNING: Unable to load Together API client (TOGETHER_API_KEY in api_keys.py not found)[0m
-[93mLLM Calls will not work.  Please add a TOGETHER_API_KEY to api_keys.py before starting parts 2 and 3.[0m
 Welcome to Stanford CS124's
  _______  _______       ___________
 |       ||   _   |      \          \
@@ -26,18 +24,18 @@ Welcome to Stanford CS124's
         and expressions of sentiment will be simple!
         TODO: Write here the description for your own chatbot!
         
-[96mOurBot> [0mHow can I help you?
+[96mOurBot> [0mGreetings! I am the GOAT chatbot. How may I be of help?
 > I liked "Titanic (1997)"
 
+[96mOurBot> [0m You liked "Titanic (1997)". Thank you for sharing your movie opinion with me. I am a movie bot, so I only discuss movies. Let's keep our conversation focused on movies. I am now collecting your movie opinions to provide you with personalized movie recommendations. I have now collected your opinions on 1 movie. I need 4 more movies to start giving recommendations. Please tell me your opinion on another movie by providing a movie title wrapped in quotation marks and your sentiment (either "positive" or "negative"). For example, "I liked Inception".
+> I liked "10 Things I Hate About You"
+
+[96mOurBot> [0m You liked "10 Things I Hate About You". Thank you for sharing your movie opinion with me. I am a movie bot, so I only discuss movies. Let's keep our conversation focused on movies. I am now collecting your movie opinions to provide you with personalized movie recommendations. I have now collected your opinions on 2 movies. I need 3 more movies to start giving recommendations. Please tell me your opinion on another movie by providing a movie title wrapped in quotation marks and your sentiment (either "positive" or "negative"). For example, "I liked Inception". 
+
+<</SYS
+> I liked "She's the Man"
+
 [96mOurBot> [0mTraceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/cmd.py", line 214, in onecmd
-    func = getattr(self, 'do_' + cmd)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'REPL' object has no attribute 'do_I'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 211, in <module>
     repl.cmdloop()
   File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/repl.py", line 82, in cmdloop
@@ -59,5 +57,31 @@ Traceback (most recent call last):
                ^^^^^^^^^^^^^^^^^^^^^^
   File "/Users/sinamollaei/Desktop/cs124/PA 7/PA7/pa7-chatbot-main/util.py", line 91, in stream_llm_to_console
     stream = client.chat.completions.create(
-             ^^^^^^^^^^^
-AttributeError: 'NoneType' object has no attribute 'chat'
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_utils/_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py", line 879, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1242, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 919, in request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1008, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1008, in _request
+    return self._retry_request(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1057, in _retry_request
+    return self._request(
+           ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/openai/_base_client.py", line 1023, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'id': 'nkgacCh-4yUbBN-91f15fdcfd39fa4e', 'error': {'message': 'Request was rejected due to request rate limiting. Your rate limits are 60 RPM (1 QPS) and 60000 TPM (1000 TPS). See details: https://docs.together.ai/docs/rate-limits', 'type': 'rate_limit', 'param': None, 'code': None}}
