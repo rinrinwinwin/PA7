@@ -21,7 +21,7 @@ Did not implement any of the above features: YES
 #########################################################################################
 # Team Contributions                                                                    #
 #########################################################################################
-Everyone contributed equally
+Everyone contributed equally.
 
 #########################################################################################
 # Optional: Feel free to include anything else that you want us to know about your      #
