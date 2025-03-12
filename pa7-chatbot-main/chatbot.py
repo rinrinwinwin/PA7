@@ -9,7 +9,8 @@ import os.path
 
 import util
 from pydantic import BaseModel, Field
-
+import porter_stemmer
+import random
 import numpy as np
 import re
 import nltk
@@ -36,6 +37,7 @@ class Chatbot:
         ########################################################################
         # Binarize the movie ratings before storing the binarized matrix.
         self.ratings = self.binarize(ratings, threshold=2.5)
+        
         ########################################################################
         #                             END OF YOUR CODE                         #
         ########################################################################
@@ -136,12 +138,41 @@ class Chatbot:
         # your implementation to do any generic preprocessing, feel free to    #
         # leave this method unmodified.                                        #
         ########################################################################
-
+        text = text.strip()
         ########################################################################
         #                             END OF YOUR CODE                         #
         ########################################################################
 
         return text
+    
+    def parse_out_movies(self, s):
+        """Extract movie titles enclosed in quotation marks from text.
+        
+        This function parses through the input string and identifies any text
+        enclosed within quotation marks ("), assuming these are movie titles.
+        
+        :param s: A string possibly containing movie titles in quotation marks
+        :returns: A tuple containing (list of extracted movie titles, remaining text)
+                - The first element is a list of strings found within quotation marks
+                - The second element is the input string with all quoted text removed
+        """
+        res = []
+        track = False
+        curr = ""
+        full = ""
+        for x in s:
+            if x in ['"']:
+                track = not(track)
+                if not(track):
+                    res.append(curr)
+                    curr = ""
+            else:
+                if track:
+                    curr += x
+                else:
+                    full += x
+        return res, full
+    
 
     def extract_titles(self, preprocessed_input):
         """Extract potential movie titles from a line of pre-processed text.
@@ -189,29 +220,32 @@ class Chatbot:
         :returns: a list of indices of matching movies
         """
 
-        matching_movies = []
+        def process_features(text):
+            text = text.lower()
+            year_match = re.search(r'\(\d{4}\)', text)
+            year = year_match.group(0) if year_match else None
+            if year:
+                text = text.replace(year, "")
+            
+            for p in ["?", ",", ".", "-", "_", "—", "&", "!"]:
+                text = text.replace(p, "")
+            
+            features = [word.strip() for word in text.split() if word.strip() not in {"i", "an", "a", "the"}]
+            return features, year
 
-        #preprocessing to separate query into year and lowercase title
-        movie_with_year = r"^(?:\b(A|An|The)\b\s*)?(.+?)(?:\s*\((\d{4})\))?$"
-        processed_year = None
-        p_title = re.match(movie_with_year, title)
-        processed_title = p_title.group(2).lower()
-        if p_title.group(3):
-            processed_year = int(p_title.group(3))
+        def is_match(query, movie):
+            query_features, query_year = query
+            movie_features, movie_year = movie
+            return (query_features == movie_features) and (query_year is None or movie_year is None or query_year == movie_year)
 
-        with open('data/movies.txt', "r", encoding="utf-8") as file:
-            pattern = r"(\d+)%(.+?) \((\d{4})\)%(.+)"
-            for line in file:
-                match = re.match(pattern, line)
-                if match:
-                    index = int(match.group(1))
-                    movie_title = match.group(2).strip().lower()
-                    year = int(match.group(3))
-                    if processed_title in movie_title:
-                        if processed_year == year or processed_year is None:
-                            matching_movies.append(index)
-
-        return matching_movies
+        query_features = process_features(title)
+        
+        matching_indices = [
+            idx for idx, movie in enumerate(self.titles)
+            if is_match(query_features, process_features(movie[0]))
+        ]
+        
+        return matching_indices
 
     def extract_sentiment(self, preprocessed_input):
         """Extract a sentiment rating from a line of pre-processed text.
@@ -229,77 +263,43 @@ class Chatbot:
         pre-processed with preprocess()
         :returns: a numerical value for the sentiment of the text
         """
-        text = re.sub(r'"[^"]+"', '', preprocessed_input)
-        words = text.split()
+        PS = nltk.stem.PorterStemmer()
+        def conv_to_value(sent):
+            if sent is None:
+                return 0
+            elif sent == "pos":
+                return 1
+            else:
+                return -1
+                
+        def sentiment(w):
+            sent = None
+            if w in self.sentiment:
+                sent = self.sentiment[w]
+            else:
+                w_stemmed = PS.stem(w)
+                if w_stemmed in self.sentiment:
+                    sent = self.sentiment[w_stemmed]
+            return conv_to_value(sent)
 
-        negation_words = {"not", "never", "no", "didnt", "didn't", "doesnt", "doesn't", "isnt", "isn't", 
-                        "wasnt", "wasn't", "cannot", "can't", "couldn't", "shouldn't", "won't",
-                        "wouldnt", "wouldn't", "arent", "aren't", "werent", "weren't", "hasnt", "hasn't",
-                        "havent", "haven't", "hadnt", "hadn't", "dont", "don't", "wont", "won't",
-                        "neither", "nor", "nobody", "nothing", "nowhere", "none", "hardly",
-                        "scarcely", "barely", "rarely", "seldom", "least", "without", "lack", "lacks",
-                        "lacking", "failed", "fails", "failing", "absent", "devoid", "free of",
-                        "minus", "contrary to", "opposite of", "unlike", "instead of", "rather than",
-                        "far from", "nowhere near", "anything but", "by no means", "in no way",
-                        "aint", "ain't", "couldnt", "mustn't", "mustnt", "needn't", "neednt",
-                        "oughtn't", "oughtnt", "mightn't", "mightnt", "refuses", "refused", "denies", "denied"}
+        opps = ["not", "can't", "never", "didn't", "wasn't", "shouldn't", "shan't", "don't"]
+        mults = ["extremely", "terrifyingly", "astronomically", "really", "super", "overwhelmingly", "extravaggently", "excrutiatingly", "totally", "so", "very", "juicy"]
 
-        emphasis_words = {"very", "really", "extremely", "so", "incredibly", 
-                        "particularly", "especially", "remarkably", "strikingly",
-                        "exceptionally", "immensely", "intensely", "profoundly",
-                        "thoroughly", "decidedly", "supremely", "genuinely",
-                        "truly", "absolutely", "unbelievably", "astonishingly",
-                        "surprisingly", "notably", "uncommonly", "tremendously",
-                        "fantastically", "insanely", "ridiculously", "shockingly",
-                        "mind-blowingly", "jaw-droppingly", "stunningly"}
+        movie_titles, sentence = self.parse_out_movies(preprocessed_input)
+        words =[x.strip() for x in sentence.lower().split()]
 
-        absolute_words = {
-                        "always", "never", "completely", "totally", "utterly", 
-                        "entirely", "wholly", "perfectly", "flawlessly",
-                        "invariably", "universally", "permanently", "categorically",
-                        "unquestionably", "undeniably", "undoubtedly", "indisputably",
-                        "unequivocally", "definitively", "unconditionally", "consistently",
-                        "unfailingly", "perpetually", "eternally", "thoroughly",
-                        "without exception", "in every way", "beyond measure",
-                        "beyond doubt", "beyond question", "beyond compare"}
-        
-        sentiment_sum = 0
-        window_size = 3  
-        
-        for i, word in enumerate(words):
-            base_sentiment = self.sentiment.get(word)
-            if base_sentiment is None:
-                continue  
+        res = 0
+        running = 1
+        for w in words:
+            #print(w, sentiment(w), PS.stem("enjoyed"))
+            if w in mults:
+                running *= 2
+            elif w in opps:
+                running *= -1
+            else:
+                res += running * sentiment(w)
             
-            sentiment = 1 if base_sentiment == "pos" else -1
-            
-            negation_flag = False
-            emphasis_count = 0
-            absolute_count = 0
-            
-            for j in range(max(0, i - window_size), i):
-                modifier = words[j]
-                if modifier in negation_words:
-                    negation_flag = True
-                if modifier in emphasis_words:
-                    emphasis_count += 1
-                if modifier in absolute_words:
-                    absolute_count += 1
-            
-            if negation_flag:
-                sentiment = -sentiment
-            
-            multiplier = 1 + emphasis_count + 2 * absolute_count
-            
-            sentiment *= multiplier
-            sentiment_sum += sentiment
-
-        if sentiment_sum > 0:
-            return 1
-        elif sentiment_sum < 0:
-            return -1
-        else:
-            return 0
+        return np.clip(res, -1, 1)
 
 
     ############################################################################
@@ -351,14 +351,14 @@ class Chatbot:
         ########################################################################
         # TODO: Compute cosine similarity between the two vectors.             #
         ########################################################################
-        dot_product = np.dot(u, v)
-        norm_u = np.lingalg.norm(u)
-        norm_v = np.lingalg.norm(v)
-
-        if norm_u == 0 or norm_v == 0:
-            return 0
-        
-        similarity = dot_product / (norm_u * norm_v)
+        def norm(x):
+            return np.sqrt(np.sum(np.square(x)))
+        denom = norm(u) * norm(v)
+        numer = np.sum(u * v)
+        if denom == 0:
+            similarity = 0
+        else:
+            similarity = numer/denom
         ########################################################################
         #                          END OF YOUR CODE                            #
         ########################################################################
