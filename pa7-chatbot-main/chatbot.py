@@ -31,6 +31,7 @@ class Chatbot:
         # movie i by user j
         self.titles, ratings = util.load_ratings('data/ratings.txt')
         self.sentiment = util.load_sentiment_dictionary('data/sentiment.txt')
+        self.user_ratings = np.zeros(len(self.titles))
 
         ########################################################################
         # TODO: Binarize the movie ratings matrix.                             #
@@ -52,7 +53,7 @@ class Chatbot:
         # TODO: Write a short greeting message                                 #
         ########################################################################
 
-        greeting_message = "How can I help you?"
+        greeting_message = "Hello! I am a ChatBot that can recommend movies to you based on your watch history. To start, please tell me about some movies you have watched. (Enter ':quit' to stop at any time.)"
 
         ########################################################################
         #                             END OF YOUR CODE                         #
@@ -107,8 +108,40 @@ class Chatbot:
         ########################################################################
         if self.llm_enabled:
             response = "I processed {} in LLM Programming mode!!".format(line)
+
         else:
-            response = "I processed {} in Starter (GUS) mode!!".format(line)
+            # need index and rating of each movie; min of 5 movies to get recommendation
+            rec_keywords = r"\b(?:un)?recommend(?:s|ed|ing|ation|ations)?\b"
+            line = self.preprocess(line)
+            titles = self.extract_titles(line)
+            if titles: # when a movie title is found; processes one at a time
+                if len(titles) == 1: # if only one relevant match
+                    matches = self.find_movies_by_title(titles[0])
+                    if len(matches) == 1:
+                        sentiment = self.extract_sentiment(line)
+                        if sentiment == 1:
+                            response = 'I see that you liked ' + titles[0] + '!'
+                            self.user_ratings[matches[0]] = 1
+                        if sentiment == 0:
+                            response = 'I see that you watched ' + titles[0] + '! Can you tell what you thought about it?'
+                        if sentiment == -1:
+                            response = 'I see that you disliked ' + titles[0] + '!'
+                            self.user_ratings[matches[0]] = -1
+                    elif len(titles) > 1:
+                        response = 'I found multiple matches for your movie! Can you specify the year in which your movie was produced and tell me about it again? ((e.g. "Titanic (1997)" was good.)'
+                    else:
+                        response = "Hmm...I couldn't find any matching movies in my database. Could you tell me about another movie or check if you made a typo?"
+                else:
+                    response = 'Sorry, I can only process one movie at a time. Tell me more about "' + titles[0] + '".'
+            elif bool(re.search(rec_keywords, line)):
+                if np.count_nonzero(self.user_ratings) >= 5:
+                    recommendation = self.recommend(self.user_ratings, self.ratings, 1)
+                    response = str(recommendation)
+                else:
+                    response = "I need to hear more about at least 5 movies before I can recommend anything. You have told me about " + str(np.count_nonzero(self.user_ratings)) + " so far."
+            else:
+                response = 'Sorry, I did not detect a movie title in your response. Please make sure your movie title is in quotation marks and the year (if applicable) is in parentheses. (e.g. "Titanic (1997)").'
+
 
         ########################################################################
         #                          END OF YOUR CODE                            #
@@ -138,7 +171,9 @@ class Chatbot:
         # your implementation to do any generic preprocessing, feel free to    #
         # leave this method unmodified.                                        #
         ########################################################################
-        text = text.strip()
+        text = text.rstrip()
+        for p in ["?", ",", ".", "-", "_", "—", "&", "!"]:
+            text = text.replace(p, "")
         ########################################################################
         #                             END OF YOUR CODE                         #
         ########################################################################
@@ -248,6 +283,9 @@ class Chatbot:
             
         return find_matches(use_title)
 
+
+    def find_movie_by_index(self, index):
+        pass
 
     def extract_sentiment(self, preprocessed_input):
         """Extract a sentiment rating from a line of pre-processed text.
